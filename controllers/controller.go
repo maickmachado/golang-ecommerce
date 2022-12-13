@@ -31,16 +31,16 @@ func HashPassword(password string) string {
 	return string(hash)
 }
 
-func VerifyPassword(userPassword, givenPassword string) (bool, string, error) {
+func VerifyPassword(userPassword, givenPassword string) (bool, string) {
+	err := bcrypt.CompareHashAndPassword([]byte(givenPassword), []byte(userPassword))
+	valid := true
+	msg := ""
 
-}
-
-func ComparePassword(userPassword, givenPassword string) (bool, error) {
-	err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(givenPassword))
 	if err != nil {
-		return false, err
+		msg = "invalid password"
+		valid = false
 	}
-	return true, nil
+	return valid, msg
 }
 
 func Signup() gin.HandlerFunc {
@@ -161,6 +161,33 @@ func ChangeEmail() gin.HandlerFunc {}
 
 func ProductViewerAdmin() gin.HandlerFunc {}
 
-func SearchProduct() gin.HandlerFunc {}
+func SearchProduct() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var productList []models.Product
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		cursor, err := ProductCollection.Find(ctx, bson.D{{}})
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, "something went wrong")
+			return
+		}
+		err = cursor.All(ctx, &productList)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		defer cursor.Close(ctx)
+		err = cursor.Err()
+		if err != nil {
+			log.Println(err)
+			c.IndentedJSON(http.StatusBadRequest, "Invalid")
+			return
+		}
+		defer cancel()
+		c.IndentedJSON(http.StatusOK, productList)
+	}
+}
 
 func SearchProductByQuery() gin.HandlerFunc {}
