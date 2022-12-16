@@ -159,8 +159,6 @@ func ChangePassword() gin.HandlerFunc {}
 
 func ChangeEmail() gin.HandlerFunc {}
 
-func ProductViewerAdmin() gin.HandlerFunc {}
-
 func SearchProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var productList []models.Product
@@ -190,4 +188,44 @@ func SearchProduct() gin.HandlerFunc {
 	}
 }
 
-func SearchProductByQuery() gin.HandlerFunc {}
+func SearchProductByQuery() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var searchProduct []models.Product
+		queryParam := c.Query("name")
+
+		if queryParam == "" {
+			log.Println("query is empty")
+			c.Header("Content-Type", "application/json")
+			c.JSON(http.StatusNotFound, gin.H{"Error": "invalid search query"})
+			c.Abort()
+			return
+		}
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		searchQuerydb, err := ProductCollection.Find(ctx, bson.M{"product_name": bson.M{"$regex": queryParam}})
+		if err != nil {
+			c.IndentedJSON(http.StatusNotFound, "not found")
+			return
+		}
+
+		err = searchQuerydb.All(ctx, &searchProduct)
+		if err != nil {
+			log.Println(err)
+			c.IndentedJSON(http.StatusBadRequest, "invalid search query")
+		}
+
+		defer searchQuerydb.Close(ctx)
+		err = searchQuerydb.Err()
+		if err != nil {
+			log.Println(err)
+			c.IndentedJSON(http.StatusBadRequest, "Invalid")
+			return
+		}
+
+		defer cancel()
+		c.IndentedJSON(http.StatusOK, searchProduct)
+	}
+}
+
+func ProductViewerAdmin() gin.HandlerFunc {}
