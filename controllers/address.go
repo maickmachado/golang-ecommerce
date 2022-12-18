@@ -19,8 +19,8 @@ func EditWorkAdress() gin.HandlerFunc {}
 
 func DeleteAdress() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID := c.Query("id")
-		if userID == "" {
+		userQueryID := c.Query("id")
+		if userQueryID == "" {
 			c.Header("Content-Type", "application/json")
 			c.JSON(http.StatusNotFound, gin.H{"Error": "Invalid search index"})
 			c.Abort()
@@ -28,7 +28,7 @@ func DeleteAdress() gin.HandlerFunc {
 		}
 
 		addresses := make([]models.AdressDetails, 0)
-		userIDHex, err := primitive.ObjectIDFromHex(userID)
+		userIDHex, err := primitive.ObjectIDFromHex(userQueryID)
 		if err != nil {
 			c.IndentedJSON(http.StatusInternalServerError, "Internal error")
 		}
