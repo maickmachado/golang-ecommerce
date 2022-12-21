@@ -107,16 +107,16 @@ func GetItemFromCart() gin.HandlerFunc {
 		defer cancel()
 
 		var fillCart models.UserModel
-		err := UserCollection.FindOne(ctx, bson.D{primitive.E{Key: "id", Value: userIDHex}}).Decode(&fillCart)
+		err := UserCollection.FindOne(ctx, bson.D{primitive.E{Key: "_id", Value: userIDHex}}).Decode(&fillCart)
 		if err != nil {
 			log.Println(err)
 			c.IndentedJSON(http.StatusInternalServerError, "not found")
 			return
 		}
 
-		filterMatch := bson.D{{Key: "$match", Value: bson.D{primitive.E{Key: "id", Value: userIDHex}}}}
+		filterMatch := bson.D{{Key: "$match", Value: bson.D{primitive.E{Key: "_id", Value: userIDHex}}}}
 		unwind := bson.D{{Key: "$unwind", Value: bson.D{primitive.E{Key: "path", Value: "$usercart"}}}}
-		grouping := bson.D{{Key: "$group", Value: bson.D{primitive.E{Key: "id", Value: "$id"}, {Key: "total", Value: bson.D{primitive.E{Key: "$sum", Value: "$user_cart.product_price"}}}}}}
+		grouping := bson.D{{Key: "$group", Value: bson.D{primitive.E{Key: "_id", Value: "$_id"}, {Key: "total", Value: bson.D{primitive.E{Key: "$sum", Value: "$user_cart.product_price"}}}}}}
 		pointCursor, err := UserCollection.Aggregate(ctx, mongo.Pipeline{filterMatch, unwind, grouping})
 		if err != nil {
 			log.Println(err)
