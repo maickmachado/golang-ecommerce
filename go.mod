@@ -8,7 +8,10 @@ require (
 	golang.org/x/crypto v0.3.0
 )
 
-require github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
+require (
+	github.com/golang-jwt/jwt/v4 v4.4.3
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+)
 
 require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
