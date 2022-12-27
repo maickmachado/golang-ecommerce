@@ -51,7 +51,7 @@ func (app *Application) AddToCart() gin.HandlerFunc {
 		var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		err = database.AddProductToCart(ctx, app.productCollection, app.userCollection, userQueryID, productID)
+		err = database.AddProductToCart(ctx, app.productCollection, app.userCollection, productID, userQueryID)
 		if err != nil {
 			log.Println(err)
 			c.IndentedJSON(http.StatusInternalServerError, err)
@@ -136,7 +136,7 @@ func GetItemFromCart() gin.HandlerFunc {
 	}
 }
 
-func UpdateItemInCart() gin.HandlerFunc {}
+//func UpdateItemInCart() gin.HandlerFunc {}
 
 func (app *Application) BuyFromCart() gin.HandlerFunc {
 	return func(c *gin.Context) {

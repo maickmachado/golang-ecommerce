@@ -131,7 +131,7 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		PasswordIsValid, msg, err := VerifyPassword(*user.Password, *foundUser.Password)
+		PasswordIsValid, msg := VerifyPassword(*user.Password, *foundUser.Password)
 		defer cancel()
 
 		if !PasswordIsValid {
@@ -149,15 +149,15 @@ func Login() gin.HandlerFunc {
 	}
 }
 
-func Logout() gin.HandlerFunc {}
+// func Logout() gin.HandlerFunc {}
 
-func Register() gin.HandlerFunc {}
+// func Register() gin.HandlerFunc {}
 
-func ResetPassword() gin.HandlerFunc {}
+// func ResetPassword() gin.HandlerFunc {}
 
-func ChangePassword() gin.HandlerFunc {}
+// func ChangePassword() gin.HandlerFunc {}
 
-func ChangeEmail() gin.HandlerFunc {}
+// func ChangeEmail() gin.HandlerFunc {}
 
 func SearchProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -228,4 +228,4 @@ func SearchProductByQuery() gin.HandlerFunc {
 	}
 }
 
-func ProductViewerAdmin() gin.HandlerFunc {}
+// func ProductViewerAdmin() gin.HandlerFunc {}

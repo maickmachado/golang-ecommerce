@@ -35,7 +35,7 @@ type Product struct {
 type UserCart struct {
 	UserCartProductID       primitive.ObjectID `bson:"_id"`
 	UserCartProductName     *string            `json:"product_name"`
-	UserCartProductPrice    *uint64            `json:"product_price"`
+	UserCartProductPrice    int                `json:"product_price"`
 	UserCartProductRating   *uint8             `json:"product_rating"`
 	UserCartProductImage    string             `json:"product_image"`
 	UserCartProductQuantity *uint8             `json:"product_quantity"`
